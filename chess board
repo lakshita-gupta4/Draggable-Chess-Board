@@ -1,0 +1,115 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Draggable Chess Board</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #181010; /* Set background to black */
+      margin: 0;
+      color: rgb(9, 9, 9);
+      font-family: Arial, sans-serif;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 2em;
+      color: rgb(232, 228, 228);
+    }
+
+    .chessboard {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .square {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      font-family: "Segoe UI Symbol", "Arial Unicode MS", sans-serif;
+      user-select: none;
+    }
+
+    .white {
+      background-color: #f0d9b5;
+    }
+
+    .black {
+      background-color: #2c8915;
+    }
+
+    .piece {
+      cursor: grab;
+    }
+  </style>
+</head>
+<body>
+  <h1>Let's Play Chess</h1>
+  <div class="chessboard" id="chessboard"></div>
+
+  <script>
+    const board = document.getElementById("chessboard");
+
+    const initialBoard = [
+      ["♜","♞","♝","♛","♚","♝","♞","♜"],
+      ["♟","♟","♟","♟","♟","♟","♟","♟"],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["","","","","","","",""],
+      ["♙","♙","♙","♙","♙","♙","♙","♙"],
+      ["♖","♘","♗","♕","♔","♗","♘","♖"]
+    ];
+
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const square = document.createElement("div");
+        square.classList.add("square", (row + col) % 2 === 0 ? "white" : "black");
+        square.dataset.row = row;
+        square.dataset.col = col;
+        square.addEventListener('dragover', e => e.preventDefault());
+        square.addEventListener('drop', onDrop);
+
+        const piece = initialBoard[row][col];
+        if (piece) {
+          const pieceElem = document.createElement("div");
+          pieceElem.textContent = piece;
+          pieceElem.classList.add("piece");
+          pieceElem.setAttribute("draggable", "true");
+          pieceElem.addEventListener("dragstart", onDragStart);
+          square.appendChild(pieceElem);
+        }
+
+        board.appendChild(square);
+      }
+    }
+
+    let draggedPiece = null;
+
+    function onDragStart(e) {
+      draggedPiece = e.target;
+      setTimeout(() => {
+        e.target.style.visibility = "hidden";
+      }, 0);
+    }
+
+    function onDrop(e) {
+      if (draggedPiece) {
+        e.target.innerHTML = ""; // remove existing piece if any
+        e.target.appendChild(draggedPiece);
+        draggedPiece.style.visibility = "visible";
+        draggedPiece = null;
+      }
+    }
+  </script>
+</body>
+</html>
